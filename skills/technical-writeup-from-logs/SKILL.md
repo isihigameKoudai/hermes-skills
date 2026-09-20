@@ -91,6 +91,9 @@ This is the step that gets skipped and the step that matters most. Check at mini
 - flags whose behavior changed (a flag that became a no-op is a silent trap)
 - pricing, tier, quota, and count claims ("40+ skills", "$20/mo") — these rot fast
 - security explanations — a feature described only by its side effects is misinformation
+- **product/feature terminology** — a feature's name may not mean what it sounds like
+  (e.g. a "marketplace" that is actually a spec/specification site). Verify what the
+  feature actually does, not just that the name exists somewhere in the docs.
 
 Then **write a dedicated section that lists the corrections**, categorized:
 `❌ wrong / no longer valid` · `⚠️ inaccurate or incomplete` · `ℹ️ minor / superseded`
@@ -127,6 +130,17 @@ cover; never invent content to fill one.
 - Close with a summary table mapping phase → problem → solution, and 2–3 one-line takeaways.
 - Do not pad with generic advice the source didn't contain. Completeness means "nothing lost",
   not "nothing added is fine".
+- **Close fast-moving-tool articles with a time-of-writing caveat.** For tools under active
+  development, end with a note stating the writing date and that commands/features may have
+  changed by reading time. The user wants this placeholder on such articles, not just a
+  "check the docs" line.
+- **Qualify environment-dependent claims.** A statement like "the terminal tool runs in a
+  Docker sandbox" or "it works this way" holds only for a specific setup (Docker backend,
+  local install). Name the environment so a reader on a different setup doesn't hit
+  "that's not how mine works".
+- **Keep figures internally consistent.** The same count/time/number in the intro, body,
+  and results must agree; if a condition changes the number (e.g. 4 learned + 1 manual =
+  5 published), state the change explicitly instead of leaving the reader to reconcile it.
 
 ## Pitfalls
 
