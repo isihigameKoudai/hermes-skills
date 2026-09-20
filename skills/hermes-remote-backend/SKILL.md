@@ -98,6 +98,9 @@ Confirmed via `/proc/self/mountinfo` from inside the terminal backend. Files the
 
 - SSH key auth for the `hermes` user is configured; `scp hermes@<vps-ip>:/home/hermes/.hermes/sandboxes/docker/default/workspace/... ~/Downloads/` works from the Mac.
 - From inside the sandbox you CANNOT reach `/home/hermes/.ssh` (no mount, no docker.sock), so adding SSH keys / editing host `authorized_keys` must happen from an existing host session (root console or a working SSH user).
+- **Skills tree is `ro` in the sandbox.** `/root/.hermes/skills` is a read-only bind mount of the host's `/home/hermes/.hermes/skills/` (verify: `grep -E '/root|/skills' /proc/self/mountinfo`). The agent reads skills but cannot write them from the sandbox; `skill_manage` writes happen host-side.
+- **`~/.hermes/scripts/` is NOT mounted into the sandbox.** Cron `script` paths resolve under the HOST `$HERMES_HOME/scripts/`; a sandbox write to `/root/.hermes/scripts/` lands elsewhere and the cron creation fails its script-existence check ("Script file not found"). To place a script on the host: write it to `/workspace/` (rw), then have the user `cp` it over SSH. Full recipe: `references/skill-sharing-and-backup.md`.
+- **No `hermes` CLI, no docker.sock, no SSH keys inside the sandbox** — cannot run `hermes …` against the host backend or reach `/home/hermes/.ssh`. Host-side work needs the user's SSH session.
 - When `MEDIA:`/gateway download fails, the fastest working fallback is uploading from the sandbox to tmpfiles.org (`curl -F file=@x https://tmpfiles.org/api/v1/upload`, then extract the `/dl/...` href from the returned HTML page). Prefer scp — tmpfiles links expire.
 - To answer "what did past sessions change in my skills", read the curator audit trail under `/root/.hermes/skills/` — see `references/skill-change-history.md` for the three sources (ledger / usage telemetry / backups) and the backfill caveats.
 
