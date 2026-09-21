@@ -93,6 +93,19 @@ Always verify, every time:
   A search-result summary is NOT verification — generated reports routinely
   invent a specific tool/owner name and label it `[verified]`. Fetch each URL;
   downgrade any 404 / not-found to `[unverified]`.
+- **Market-size figures for niche/emerging categories.** The single analyst
+  number a plan cites (e.g. "$4.7B") usually traces to a content blog's own
+  "industry estimate," not Gartner/Forrester — which typically publish NO
+  figure for categories this new. Independent analyst reports (Mordor,
+  Spherical, SNS, …) can disagree by ~10x for the same year. Find the actual
+  source, report the range with per-source labels, and if no primary analyst
+  source exists close that research item as "does not exist" rather than
+  hunting for a cleaner number.
+- **Competitor prices the plan quotes.** Re-fetch from the competitor's own
+  current pricing page before trusting a number the plan cites. One-off
+  figures ("$210–$4,800") are routinely stale, currency-misconverted, or from
+  a different-language listing, and the operator's real tier structure can
+  overturn the plan's positioning assumption.
 
 **Competitor analysis minimum bar.** A price-tier matrix (budget / mid /
 premium) is market *structure*, not competitor analysis. Require:

@@ -85,6 +85,7 @@ Fixes, in order:
 
 - **The terminal backend is a Docker sandbox *inside* the VPS; the gateway/agent runs on the VPS *host*, outside it.** From the sandbox you can find/diagnose files but cannot run `hermes update` or patch the host gateway — that must happen on the host. Don't claim you applied a fix you only verified from the sandbox.
 - **Re-sending `MEDIA:` won't dodge the download bug** — it hits the same 401 for non-media files. Give the `scp` path instead.
+- **A `@folder:` reference to a Mac path never reaches the sandbox.** The desktop app expands it locally; when the path is outside the configured allowed workspace you get only a `path is outside the allowed workspace` context warning with no file contents. Don't stall or ask immediately — previous sessions often left a working mirror of the same material on the VPS (`/workspace/`, `/root/`, or a project subdir). `ls` those first; if you find the mirror, say plainly you worked from the VPS mirror and list which files, then ask the user to flag anything missing.
 - The user's standing preference (see memory): when file delivery silently fails, resolve the **concrete path** (find + scp), never a "copy from chat" workaround.
 
 ## Verified sandbox↔host mapping (this user's VPS)
