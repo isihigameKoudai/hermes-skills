@@ -88,6 +88,11 @@ Always verify, every time:
 - **Statistics** — source and year.
 - **Regulated terms.** "Audit," "certification," "penetration test" carry
   compliance meaning. Misuse inflates both expectation and liability.
+- **Every named entity resolves.** A competitor, tool, CVE, paper ID, or
+  forum post is `[verified]` only after its canonical URL returns HTTP 200.
+  A search-result summary is NOT verification — generated reports routinely
+  invent a specific tool/owner name and label it `[verified]`. Fetch each URL;
+  downgrade any 404 / not-found to `[unverified]`.
 
 **Competitor analysis minimum bar.** A price-tier matrix (budget / mid /
 premium) is market *structure*, not competitor analysis. Require:
@@ -165,6 +170,11 @@ Cheap, and catches embarrassing defects:
 - Executive-summary numbers == body numbers?
 - Diagrams == prose?
 - Anything listed as a strength that a later chapter lists as a constraint?
+- Universal and negative claims vs. the doc's own tables. "No competitor in
+  X market" / "all competitors are English-speaking" is falsified by a single
+  counterexample row — a competitor table that already lists a Japanese
+  operator makes "no Japanese competitor" false. Cross-check the claim against
+  every row before asserting it.
 
 Then: **write five objections to your own review.** Anything you cannot answer
 is a hole in the review, not in the plan.
@@ -219,6 +229,10 @@ the chat" as a resolution.
   contradicting yourself.
 - **Accepting a tier matrix as competitor analysis.**
 - **Forgetting sales hours** in the effort model.
+- **Trusting a report's own `[verified]` labels.** Re-verify the named
+  entities (fetch each URL, confirm 200) and re-check universal/negative
+  claims against the report's own tables. Hallucinated names and
+  self-contradictions survive even when a fact-check gate is claimed.
 - **Presenting an infeasible plan as feasible** because the arithmetic was
   never run.
 - **Softening a legal finding into a "consideration."** Criminal exposure and
