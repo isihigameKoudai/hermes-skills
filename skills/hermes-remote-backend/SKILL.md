@@ -20,6 +20,7 @@ The generic `hermes-agent` skill covers config/theming/spawning across all surfa
 - The user asks about a VPS-hosted Hermes + remote desktop/SSH topology, or "can the backend touch my local files?".
 - A delivered file fails to download with `Couldn't fetch ... from the gateway`.
 - You need to reason about *where* terminal/file tools execute in a remote setup.
+- The user is installing or verifying a plugin that has both a Python backend and a Desktop widget (see the "Installing plugins" section).
 
 ## Mental model: two kinds of "connected" — do not conflate
 
@@ -59,6 +60,18 @@ Requirements: Mac **Remote Login** enabled (System Settings → General → Shar
 **Caveat:** the SSH backend treats the remote as a sandbox and pushes `~/.hermes/` state (credentials, skills, cache) into it during the session ("Remote-to-Host State Sync on Teardown"). In reverse direction this can copy VPS credentials onto the Mac — verify with a read-only command first, and mind what you expose.
 
 **Verify, don't assume:** `terminal` definitely routes over SSH; confirm `read_file`/`write_file`/`patch` follow the same backend with a `pwd` + small-file write test before trusting it for a real job.
+
+## Installing plugins that have a backend + desktop widget (split-runtime)
+
+Most plugins ship two halves: a Python backend under `<HERMES_HOME>/plugins/<name>/` (loaded by the gateway at process start) and a Desktop widget under `<HERMES_HOME>/desktop-plugins/<name>/plugin.js` (read by Electron on the app machine). A plugin's `./install.sh` installs **both halves onto the machine it runs on** — it has no notion of the split.
+
+In split-runtime (VPS gateway + Mac desktop):
+- Run the installer **on the VPS** (via SSH) — that lands the backend beside the gateway, which is correct. But it also strands the widget on the VPS.
+- Then **scp the widget half to the Mac**, because Electron reads it there, not from the VPS:
+  `mkdir -p ~/.hermes/desktop-plugins/<name> && scp hermes@<vps>:/home/hermes/.hermes/desktop-plugins/<name>/plugin.js ~/.hermes/desktop-plugins/<name>/plugin.js`
+  (copy `version.json` too if the plugin writes one — it drives the widget's update self-check).
+- Restart **both halves independently**. Restarting the desktop app reloads only the widget; the Python backend mounts at gateway process start, so the VPS gateway must be restarted separately (systemd / however it's managed). A Mac app restart alone does NOT restart the VPS gateway.
+- Verify on the gateway, never the sandbox: `ssh hermes@<vps> 'hermes plugins doctor <name> && hermes <plugin-subcommand>'`. The sandbox has no `hermes` CLI and its `plugins/`/`desktop-plugins/` are NOT bind-mounted (only attachments/skills/images/cache are), so you can neither run the plugin commands nor inspect the installed plugin from there — confirm install state over SSH instead.
 
 ## Gateway file delivery — the non-media download bug
 
