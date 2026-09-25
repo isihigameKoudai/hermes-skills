@@ -6,6 +6,7 @@ Hermes Agent 用のカスタム skill tap。学習で育ったスキルを共有
 
 | スキル | 内容 |
 |---|---|
+| `cmo` | 新規事業の立案・検証・グロース・マーケティング全般を統括するディレクター・エージェント（制約・事実・算数・リスクの4ゲート検証付き） |
 | `technical-writeup-from-logs` | 生ログ／トランスクリプトから事実確認済みの技術記事を書く |
 | `business-plan-review` | 事業計画の実現可能性・法的リスク・KPI モデリングをレビュー |
 | `hermes-remote-backend` | VPS + リモートデスクトップ構成での Hermes 運用ノウハウ |
@@ -39,6 +40,9 @@ hermes skills install isihigameKoudai/hermes-skills/skills/<skill-name>
 
 ```text
 skills/
+├── cmo/
+│   ├── SKILL.md
+│   └── references/
 ├── technical-writeup-from-logs/
 │   ├── SKILL.md
 │   ├── references/
