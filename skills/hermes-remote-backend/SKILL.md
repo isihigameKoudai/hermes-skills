@@ -28,6 +28,8 @@ The generic `hermes-agent` skill covers config/theming/spawning across all surfa
 |---|---|---|
 | **Desktop → remote backend connection** | The Electron app streams the agent UI over a WebSocket (`/api/ws`) to the VPS gateway. UI only. | **On the backend (VPS).** Mac files are untouched. |
 | **Tool execution location** | Set by `terminal.backend` on the machine running the agent. | Backend setting decides. |
+| **Bot Screen (GUI streaming)** | Desktop-only: each bot gets an Xfce desktop on a **headless Linux gateway**, streamed over TigerVNC into the Desktop app with human takeover. | On the backend. This is *watching the bot's screen* — unrelated to remote-brain/remote-hands. |
+| **TUI remote-attach** | Does **not** exist. `hermes --tui` always bootstraps a local runtime against local `~/.hermes`. | N/A |
 
 Connecting the desktop to a remote backend does **not** give the agent access to local Mac files. `read_file`/`write_file`/`terminal`/`patch`/`search_files` all execute on whatever `terminal.backend` resolves to.
 
@@ -39,6 +41,18 @@ The user repeatedly wants: VPS keeps skills/memory/reasoning, but terminal/file/
 - PR #21223 only *documented* server-side execution; the actual split-runtime PR [#63966](https://github.com/NousResearch/hermes-agent/pull/63966) is still open.
 
 Do not claim it's supported. Do not promise a config that makes it work natively.
+
+### TUI remote-attach is also not shipped
+
+The user also wants to *use VPS skills/memory from the terminal TUI* on the Mac. Same family of gap: there is **no** `hermes --tui --gateway <url>` and no user-facing `HERMES_TUI_GATEWAY_URL`. That env var is **internal dashboard wiring only** — the dashboard's Chat tab spawns an embedded TUI child and injects the var so it attaches to the dashboard's own loopback `/api/ws`. Pointing it at `hermes gateway` / the api_server returns 404 (the api_server deliberately does not serve `/api/ws`; it's the model-backend surface).
+
+The TUI gateway **wire protocol exists** (`tui_gateway/ws.py`, WebSocket JSON-RPC — prompt.submit, session.*, approvals, streaming, reconnect) but the shipped client has no remote transport, so it's a thin-client feature request (open, awaiting maintainer decision), not a config you can set today.
+
+**Current working answers for "use VPS brain from a terminal":**
+- `ssh` into the VPS and run `hermes --tui` there under tmux — works, but file/terminal tools then act on the **VPS filesystem**, not the Mac. (This is the reverse of the "remote brain, local hands" wish — it's "remote brain, remote hands".)
+- **Desktop app remote-gateway connection** (Settings → Gateways → remote/SSH/Cloud) already works and keeps skills/memory/sessions on the VPS. If terminal-TUI isn't strictly required, this is the shipped path.
+
+Before answering "can I use the VPS brain from here", check the three notions above — remote-gateway UI, split-runtime, Bot Screen — the user conflates them.
 
 ### Workaround: SSH terminal backend in *reverse* direction
 
