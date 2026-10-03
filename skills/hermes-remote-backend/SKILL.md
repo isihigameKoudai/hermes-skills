@@ -104,8 +104,8 @@ unzip -l <path>          # for zips
 
 Fixes, in order:
 1. **Immediate (no code change):** the file exists on the backend. `scp <user>@<vps_ip>:<path> ~/Downloads/` from the Mac. Confirm the host-visible path — inside the terminal backend the file may be at `/workspace/...`; the host may differ, so `find` on the host if the scp 404s.
-2. **Root cause:** run `hermes update` on the host — PR [#89013](https://github.com/NousResearch/hermes-agent/pull/89013) ("authenticate gated file downloads for password remotes") may already fix it.
-3. **Patch:** add `X-Hermes-Session-Token` recognition to `gated_auth_middleware` (see `references/gateway-file-delivery.md`).
+2. **Auth 401 — already fixed upstream (merged).** The gated-download 401 (the `X-Hermes-Session-Token` header being ignored when `auth_required: true`) is fixed in `main`; `hermes update` on the host resolves it. Do **not** hand-patch `gated_auth_middleware` — that fix is already merged, so a manual patch would now be dead code. Check the current tree before assuming this class of bug is still open.
+3. **Remaining open gap — container→host path translation.** In a Docker-sandbox topology, files the agent writes *inside* the sandbox (`/workspace/...`) sit at a different path than the gateway host resolves, so preview / `MEDIA:` / download can still 404 even after the auth fix lands. Resolve with the sandbox↔host mapping table below (write under `/workspace`, then `scp` from the host-visible path, or upload to tmpfiles.org).
 4. **Stopgap:** `auth_required: false` — only if the gateway is NOT internet-exposed (Tailscale-only is fine).
 
 ## Pitfalls

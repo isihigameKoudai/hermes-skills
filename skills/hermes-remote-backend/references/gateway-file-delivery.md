@@ -21,6 +21,8 @@ Two middlewares:
 
 The Electron client (`downloadViaTokenToFile`, `apps/desktop/electron/main.ts`) sends the token as `X-Hermes-Session-Token`. So under `auth_required: true`, the header is ignored by *both* middlewares → 401 → the generic error.
 
+**Status: this auth bug is fixed upstream (merged).** The gated-download auth path now presents credentials the same way as REST; `hermes update` ships it. Do not hand-patch `gated_auth_middleware` for this — the manual patch below is retained only as historical reference for understanding the mechanism. The still-open gap in a Docker-sandbox topology is **container→host path translation** (files written inside the sandbox sit at a different path than the gateway host resolves), which is a separate bug from this auth 401.
+
 ## Reproduction
 
 1. Gateway configured with `auth_required: true` (basic or OAuth).
@@ -29,7 +31,9 @@ The Electron client (`downloadViaTokenToFile`, `apps/desktop/electron/main.ts`) 
 
 Media files (image/audio/video) are unaffected because they fetch through a different path.
 
-## Manual fix (patch to `hermes_cli/dashboard_auth/middleware.py`)
+## Manual fix — historical only, do not apply
+
+The following patch is **superseded by a merged upstream fix** (`hermes update` ships it). Retained only so the mechanism is understandable; applying it now is dead code.
 
 In `gated_auth_middleware`, after the public-path check and before the bearer check:
 
@@ -51,7 +55,7 @@ if session_header:
 | `X-Hermes-Session-Token` (wrong) | 401 | 401 (still blocked) |
 | `/api/fs/read-data-url` (valid) | 401 | **200 OK** |
 
-Note: an overlapping PR, [#89013](https://github.com/NousResearch/hermes-agent/pull/89013) ("authenticate gated file downloads for password remotes"), may supersede this manual patch — check whether `hermes update` already ships it before hand-editing.
+Note: an overlapping PR, [#89013](https://github.com/NousResearch/hermes-agent/pull/89013) ("authenticate gated file downloads for password remotes"), was closed unmerged and superseded by a later merged PR that ships the auth fix. Do not hand-edit — run `hermes update` and verify instead.
 
 ## Secondary inconsistency
 
