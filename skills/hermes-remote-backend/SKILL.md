@@ -87,6 +87,20 @@ In split-runtime (VPS gateway + Mac desktop):
 - Restart **both halves independently**. Restarting the desktop app reloads only the widget; the Python backend mounts at gateway process start, so the VPS gateway must be restarted separately (systemd / however it's managed). A Mac app restart alone does NOT restart the VPS gateway.
 - Verify on the gateway, never the sandbox: `ssh hermes@<vps> 'hermes plugins doctor <name> && hermes <plugin-subcommand>'`. The sandbox has no `hermes` CLI and its `plugins/`/`desktop-plugins/` are NOT bind-mounted (only attachments/skills/images/cache are), so you can neither run the plugin commands nor inspect the installed plugin from there — confirm install state over SSH instead.
 
+## Duplicate gateway services (user + system) → exit-75 restart loop
+
+If `hermes gateway status` warns `Both user and system gateway services are installed (user + system)`, one scope is almost certainly in an unbounded restart loop: the unit starts, sees the other scope's gateway already serving `default`, prints `already serves profile 'default' — nothing to start`, and exits 75 (EX_TEMPFAIL). The generated systemd unit sets `RestartForceExitStatus=75`, so it relaunches ~5s later, refuses again, forever (`restart counter` climbs without bound, burning CPU each cycle).
+
+- Diagnose who owns the REAL gateway first: `ps -o pid,ppid,user,lstart,cmd -p <pid>`. PPID 1 (init) = system scope; that process is the live one and must survive. The refused unit is the one to remove.
+- The 75 loop is the same thing that grows `gateway-exit-diag.log` without bound — each refused start appends a diagnostic line. Fixing the log's rotation (see the contributing skill) is defense; removing the duplicate supervisor is the root-cause fix.
+- Resolve from the user scope (no sudo): `hermes gateway stop; systemctl --user disable hermes-gateway.service; systemctl --user reset-failed hermes-gateway.service` then `hermes gateway uninstall`. The user-scope uninstall leaves the system unit (the live one) untouched.
+- `sudo` over SSH fails with `A terminal is required to authenticate`, so `--system` service commands need a real tty — do user-scope remediation first, and only touch the system unit from an interactive host session.
+- Verify the loop actually stopped: `hermes gateway status` shows the unit `inactive (dead)`/`disabled`, and `ps -p <pid>` still shows the real gateway `Ssl` (running), not `R`.
+
+## Gateway/cron liveness — the `gateway_running: false` false negative
+
+The cron tool can report `gateway_running: false` even while the scheduler is healthy: it keys off the user-scope service, so after the user unit is stopped/uninstalled (with the gateway still running under the system scope) it keeps warning. Do not trust that flag alone — confirm liveness by watching an existing recurring job's `last_run_at` advance past its due time. If it advances, the scheduler is firing and new jobs will too.
+
 ## Gateway file delivery — the non-media download bug
 
 **Symptom:** clicking a delivered file link shows
