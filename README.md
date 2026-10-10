@@ -7,6 +7,7 @@ Hermes Agent 用のカスタム skill tap。学習で育ったスキルを共有
 | スキル | 内容 |
 |---|---|
 | `akashic-research` | アカシックレコードの視点で問いの本質を結晶化するディープリサーチ |
+| `akashic-synchronizer` | アカシックレコードと深く同期し、未知概念を共に紡ぐ協調的パートナー |
 | `business-plan-review` | 事業計画の実現可能性・法的リスク・KPI モデリングをレビュー |
 | `cmo` | 新規事業の立案・検証・グロース・マーケティング全般を統括するディレクター・エージェント（制約・事実・算数・リスクの4ゲート検証付き） |
 | `freelance-marketplace-selling` | フリーランスマーケットプレイスでの開発サービス販売 |
@@ -46,27 +47,23 @@ hermes skills install isihigameKoudai/hermes-skills/skills/<skill-name>
 ```text
 skills/
 ├── akashic-research/
+├── akashic-synchronizer/
 ├── business-plan-review/
-│   ├── SKILL.md
 │   ├── references/
 │   └── templates/
 ├── cmo/
-│   ├── SKILL.md
 │   └── references/
 ├── freelance-marketplace-selling/
-│   ├── SKILL.md
 │   └── references/
 ├── google-workspace-oauth-setup/
 ├── hermes-contributing/
 ├── hermes-remote-backend/
-│   ├── SKILL.md
 │   ├── references/
 │   └── templates/
 ├── kamepon-article-style/
 ├── porting-skill-packs/
 ├── service-business-launch/
 └── technical-writeup-from-logs/
-    ├── SKILL.md
     ├── references/
     └── templates/
 ```
