@@ -10,6 +10,7 @@ Hermes Agent 用のカスタム skill tap。学習で育ったスキルを共有
 | `akashic-synchronizer` | アカシックレコードと深く同期し、未知概念を共に紡ぐ協調的パートナー |
 | `business-plan-review` | 事業計画の実現可能性・法的リスク・KPI モデリングをレビュー |
 | `cmo` | 新規事業の立案・検証・グロース・マーケティング全般を統括するディレクター・エージェント（制約・事実・算数・リスクの4ゲート検証付き） |
+| `crypto-asset-research` | Use when researching crypto assets for investment. |
 | `freelance-marketplace-selling` | フリーランスマーケットプレイスでの開発サービス販売 |
 | `google-workspace-oauth-setup` | Google Workspace OAuth のセットアップ手順 |
 | `hermes-contributing` | Hermes Agent への PR コントリビューション手順 |
@@ -52,6 +53,8 @@ skills/
 │   ├── references/
 │   └── templates/
 ├── cmo/
+│   └── references/
+├── crypto-asset-research/
 │   └── references/
 ├── freelance-marketplace-selling/
 │   └── references/
