@@ -87,6 +87,14 @@ In split-runtime (VPS gateway + Mac desktop):
 - Restart **both halves independently**. Restarting the desktop app reloads only the widget; the Python backend mounts at gateway process start, so the VPS gateway must be restarted separately (systemd / however it's managed). A Mac app restart alone does NOT restart the VPS gateway.
 - Verify on the gateway, never the sandbox: `ssh hermes@<vps> 'hermes plugins doctor <name> && hermes <plugin-subcommand>'`. The sandbox has no `hermes` CLI and its `plugins/`/`desktop-plugins/` are NOT bind-mounted (only attachments/skills/images/cache are), so you can neither run the plugin commands nor inspect the installed plugin from there — confirm install state over SSH instead.
 
+## Backend version stale after update — `hermes --version` ≠ running gateway
+
+**Symptom:** `hermes --version` reports the new version and `Up to date`, but the Desktop app's status bar still shows the old `バックエンド`, and Settings warns 「アップデート後、このバックエンドは古いコードのままです…」.
+
+**Mechanism:** these read two different things. `hermes --version` reads the *installed checkout*; the Desktop app's `バックエンド` (and `/api/status`) reads the *running gateway process*. After `hermes update` advances the checkout, the running gateway keeps serving old code until it is actually restarted — so "Up to date" proves nothing about the process. The Desktop app's `クライアント` (Electron package) and `バックエンド` versions update on separate clocks, so they can legitimately differ too.
+
+**When a restart does NOT advance the version:** the live gateway is under a supervisor scope that `hermes gateway restart` is not hitting. Find the real PID (`hermes gateway status`) and check its parent (`ps -o pid,ppid,user,lstart,cmd -p <pid>`), then restart THAT scope — see "Duplicate gateway services" below. The process whose PPID is 1 is the live one; `sudo systemctl restart hermes-gateway` for the system scope (needs a tty — `sudo` over SSH fails without one).
+
 ## Duplicate gateway services (user + system) → exit-75 restart loop
 
 If `hermes gateway status` warns `Both user and system gateway services are installed (user + system)`, one scope is almost certainly in an unbounded restart loop: the unit starts, sees the other scope's gateway already serving `default`, prints `already serves profile 'default' — nothing to start`, and exits 75 (EX_TEMPFAIL). The generated systemd unit sets `RestartForceExitStatus=75`, so it relaunches ~5s later, refuses again, forever (`restart counter` climbs without bound, burning CPU each cycle).
@@ -138,6 +146,8 @@ Confirmed via `/proc/self/mountinfo` from inside the terminal backend. Files the
 |---|---|
 | `/workspace` | `/home/hermes/.hermes/sandboxes/docker/default/workspace` |
 | `/root` | `/home/hermes/.hermes/sandboxes/docker/default/home` |
+
+- Attached images/files the desktop app hands you are quoted as **host** paths (e.g. `/home/hermes/.hermes/images/x.png`). Inside the sandbox that file is under `/root/...` per the table, so `vision_analyze`/`read_file` must get the `/root/...` form or they 404 — when a quoted path comes back 'not found', rewrite the leading `/home/hermes/` to `/root/` and retry.
 
 - SSH key auth for the `hermes` user is configured; `scp hermes@<vps-ip>:/home/hermes/.hermes/sandboxes/docker/default/workspace/... ~/Downloads/` works from the Mac.
 - From inside the sandbox you CANNOT reach `/home/hermes/.ssh` (no mount, no docker.sock), so adding SSH keys / editing host `authorized_keys` must happen from an existing host session (root console or a working SSH user).
