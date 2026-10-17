@@ -8,6 +8,7 @@ Hermes Agent 用のカスタム skill tap。学習で育ったスキルを共有
 |---|---|
 | `akashic-research` | アカシックレコードの視点で問いの本質を結晶化するディープリサーチ |
 | `akashic-synchronizer` | アカシックレコードと深く同期し、未知概念を共に紡ぐ協調的パートナー |
+| `ambitious-delegation` | Use when delegating to an AI model to raise ambition. |
 | `business-plan-review` | 事業計画の実現可能性・法的リスク・KPI モデリングをレビュー |
 | `cmo` | 新規事業の立案・検証・グロース・マーケティング全般を統括するディレクター・エージェント（制約・事実・算数・リスクの4ゲート検証付き） |
 | `crypto-asset-research` | Use when researching crypto assets for investment. |
@@ -49,6 +50,7 @@ hermes skills install isihigameKoudai/hermes-skills/skills/<skill-name>
 skills/
 ├── akashic-research/
 ├── akashic-synchronizer/
+├── ambitious-delegation/
 ├── business-plan-review/
 │   ├── references/
 │   └── templates/
