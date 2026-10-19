@@ -1,7 +1,7 @@
 ---
 name: porting-skill-packs
 description: "Port external skill/agent packs into Hermes."
-version: 1.0.0
+version: 1.2.0
 author: Hermes Agent
 license: MIT
 metadata:
@@ -51,6 +51,15 @@ Convention mapping:
 
 `librarian` and `explore` are framework TOOLS, not skills — map them, do not list them in the orchestrator's skill catalog as if they were skills.
 
+### 3b. Single-skill packs (one skill dir + `scripts/` + `references/`)
+
+Many packs are not orchestrators at all — one `<name>/SKILL.md` plus `scripts/*.py`, `references/*.md`, `examples/`. The adaptation is the tool/path layer only:
+
+- Add a short "Hermes での動かし方" section with the mapping: subagent-role prompts → `delegate_task` (put "do not summarize, do not write files" in the child's `context` — children default to summarizing), web search/fetch → `web_search` / `web_extract`, slash commands → the spoken trigger phrases, `~/<dir>/` → sandbox `$HOME` plus the host-visible path.
+- State ONCE, in the tools section, that `scripts/...` means the skill's own directory (`skill_dir` from `skill_view`), and call them by absolute path. Installed skills are not cwd, so bare relative paths silently miss.
+- Copy any auxiliary directory the SKILL.md cites by repo path (`examples/demo`, fixtures, sample sources) into the skill dir and rewrite the citation to be skill-relative — otherwise the reference dangles after install and the demo can't be run.
+- Add a "同梱スキルとの使い分け" section naming the bundled skills that overlap, so a future agent picks the better tool instead of the ported one.
+
 ### 4. Dedupe against bundled skills
 
 An orchestrator's validation/gate machinery is often already shipped as a more mature bundled skill. Before reimplementing, check the bundle:
@@ -78,12 +87,51 @@ done
 
 Direction 2 also lists tools and bundled-skill names (e.g. `clarify`, `business-plan-review`) — those are legitimate. Only flag a name as a bug if it is meant to be a pack skill but has no directory.
 
+### 5b. Smoke-test the staged copy before handing over the installer
+
+A green unit-test suite does not prove the CLI paths work — run the pack's own tests AND one real invocation of every script, in a throwaway dir, from the absolute skill path:
+
+```bash
+python3 -m pytest -q                       # pip install pytest pyyaml if absent
+python3 <skill_dir>/scripts/report.py <skill_dir>/examples/demo   # bundled fixture
+# then one real call per remaining script (fetch a real URL, hit the real API, read a real feed)
+```
+
+Fix breakage in the STAGED copy and fold every fix into the mapped SKILL.md as a rule (e.g. "`file` is the bare filename under `sources/`, not `sources/<file>`"), not just into your head. Report per-script results — the user wants evidence the port was exercised, not a claim that it was.
+
+### 5c. Prove fidelity with hashes (the user will ask)
+
+A port is judged on whether the pack's code was copied or retyped. Make the answer mechanical:
+
+```bash
+git clone --depth 1 <repo> /workspace/<repo>          # never hand-copy code below SKILL.md
+cp -r /workspace/<repo>/<path-to-skill> <staged>/
+scripts/verify-port-fidelity.sh /workspace/<repo>/<path-to-skill> <staged>/<name>
+```
+
+Report three things: the upstream commit (`git log -1 --format='%H %ad %s' --date=iso`), which files are byte-identical, and — for the SKILL.md you edited — added-line count plus the replaced lines, so the user can see no original content was dropped. `scripts/verify-port-fidelity.sh` prints exactly that table; pass the file you intentionally edited as `--expect-diff SKILL.md` so it is reported as expected rather than as a defect.
+
+Run it before answering any "did you just paste it?" question, and quote the hashes rather than asserting good faith.
+
 ### 6. Stage and install (remote VPS)
 
 The sandbox skills tree is read-only. Stage the pack under `/workspace` (host-visible at `/home/hermes/.hermes/sandboxes/docker/default/workspace/`), then hand the user ONE fish-safe, semicolon-chained command to `cp -r` into `~/.hermes/skills/<category>/`. A new category (e.g. `marketing/`) avoids name collisions with bundled skills. See the `hermes-remote-backend` skill for the mount mapping.
 
+### 7. Keep ported packs out of any auto-publish path
+
+When the host auto-syncs `~/.hermes/skills` to a shared GitHub tap (this setup: `~/.hermes/scripts/sync-skills-to-tap.sh` on a no-agent cron), a ported third-party skill becomes public the moment it is installed. Unless the user asks for it to be published, exclude it:
+
+1. Add the name to the sync script's `EXCLUDE` set. That filters at copy time, so nothing is ever staged — stronger than a `.gitignore`, which only hides files from `git add` while the working tree still holds them.
+2. Prove the exclusion without pushing: run the script with a throwaway `HOME` and `HERMES_HOME` whose `.usage.json` marks the ported skill `created_by: agent` (the condition that makes it eligible), then check the tap's `skills/` and `README.md` contain every other skill and not that name.
+3. Stage the patched script and give ONE fish-safe semicolon-chained command that copies script + skill together and ends by grepping the `EXCLUDE` line, so the user sees it landed.
+
+Also state plainly what is already public (query the repo tree) before promising anything — "nothing has been pushed" is only credible with the tree listing.
+
 ## Pitfalls
 
+- **A clean framework grep means the port is a COPY job, not a rewrite.** When the pack already carries its own fallback ("if you have no subagents, search it yourself"), do not invent adapters — add the mapping table, the script-path rule, and the overlap section, and leave the body verbatim. Info loss is the defect the user will notice.
+- **Anything cited as `repo/...` breaks after install.** Fixtures, `examples/`, and cross-directory references must be copied into the skill dir and rewritten skill-relative in the same pass.
+- **Bundled scripts are called by absolute path from `skill_dir` only.** A relative `scripts/x.py` works only while cwd is the skill dir, which never happens for an installed skill.
 - **`@folder:` to a Mac path fails silently** — a VPS mirror usually already exists; `ls` `/workspace`/`/root`/attachments before asking the user to re-upload.
 - **Don't bulk-edit all sub-skills for convention drift.** Grep to find the few files that actually reference framework tools/paths; fix the orchestrator to establish canonical mappings instead.
 - **A dropped or ghost catalog entry is invisible to eyeballing** — always run the two-direction reverse grep. Missing references are the #1 defect the user will ask about.

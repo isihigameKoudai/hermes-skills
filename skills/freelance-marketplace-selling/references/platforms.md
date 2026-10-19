@@ -14,6 +14,11 @@
 ## Fiverr
 - Payout: bank transfer via Payoneer ($1, min $20 outside US), PayPal, Payoneer account ($3). Direct deposit is US-only.
 - Race-to-bottom pricing culture; use only for a lead-magnet tier (e.g. $199), not premium tiers.
+- Profile/gig field caps: display name 15 chars, profile title (tagline) 80, profile About 600 (newlines count), gig title 80.
+- Text fields accept only ASCII letters/numbers/spaces/basic punctuation — non-ASCII separators like `·` (U+00B7) are rejected; use `-` or `|`.
+- Seller onboarding order: profile fields → "Create a Gig" → category/subcategory (irreversible after publish) → search tags → scope & pricing (packages) → description & FAQ → requirements → gallery → publish.
+- Skip during onboarding: "Seller Plus" upsell ($15/mo — keyword/promotion tools, useless before first order), Trust & Safety training (optional), and the "Upload your experience" LinkedIn-PDF import (manual profile entry works fine). ID verification is locked until the first gig is created.
+- LinkedIn import (optional): LinkedIn profile → "…" (その他のアクション) → "Save to PDF" (PDFとして保存). LinkedIn's About section is labeled **自己紹介** in the Japanese UI (add URL ends `/edit/forms/summary/new/`) — NOT 「概要」.
 
 ## W-8BEN (Japan seller)
 - Individual: Form W-8BEN. Entity: Form W-8BEN-E. TIN = My Number (マイナンバー).
