@@ -69,6 +69,7 @@ skills/
 │   └── templates/
 ├── kamepon-article-style/
 ├── porting-skill-packs/
+│   └── scripts/
 ├── service-business-launch/
 └── technical-writeup-from-logs/
     ├── references/
