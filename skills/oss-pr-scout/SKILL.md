@@ -48,6 +48,13 @@ Monorepo (pnpm) reality checks:
 - Prove eslint noise is pre-existing: `git stash && npx eslint <files> && git stash pop`, compare problem counts.
 - Typecheck explicitly (`npx tsc -p tsconfig.json --noEmit`) and build the package (`pnpm --filter <pkg> build`) before pushing.
 
+## 3.5 Repo-specific gates that CI will reject you for
+
+Read `CONTRIBUTING.md` and `.github/pull_request_template.md` *before* pushing, not after:
+- Published-package changes often need a changeset (`.changeset/<name>.md` with `'@scope/pkg': minor|patch` and a one-paragraph note). Docs/CI/dev-only changes usually do not.
+- Some repos require API changes to be proposed as an issue *with maintainer sign-off* first. A maintainer-authored issue containing the full spec (scope, tests, docs, related issues) counts as that sign-off and is the ideal target.
+- Fill the template's checklist literally and disclose AI assistance when the repo mentions AI-authored PR rules; maintainers reject PRs that skip required sections.
+
 ## 4. PR body
 
 State what changed, the additive/compat surface, exact local commands with their pass counts, and what was *not* run (e2e, browser suites) so CI is the stated source of truth. Link the issue with `Closes #N` only when the change fully resolves it.
