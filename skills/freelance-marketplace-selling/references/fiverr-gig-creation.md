@@ -1,5 +1,13 @@
 # Fiverr Gig Creation — wizard walkthrough
 
+## Onboarding funnel (before the wizard)
+
+- **"Upload your experience"** offers to import a LinkedIn PDF. It does NOT link the LinkedIn account — it is a one-time import, and manual entry is equally fine. Skipping is safe.
+- **"Seller Plus Kickstart" (US$15/month)** is a paid subscription upsell injected mid-onboarding. Skip it: its features (keyword research, promotions, priority support) only pay off once orders flow, and it is NOT the mandatory free ID check. A "Skip / Not now" link exists on that card.
+- **Trust & Safety training** — optional; "Skip" is fine.
+- **ID verification** — rendered locked until the first gig exists; it unlocks later and only the account holder can complete it.
+- A half-finished gig is saved as a **DRAFT** (listed under "Draft Gigs", `GIG STATUS: DRAFT`) and stays fully editable — title and delivery time included — until published. Check the draft list's title and delivery values before publishing; a title typed to dodge a validation error can survive as a truncated one.
+
 Observed step order in the current gig editor. Category and service type are **irreversible after publish**; everything else is editable later. Field caps: see `references/platforms.md`.
 
 ## Steps, in order
