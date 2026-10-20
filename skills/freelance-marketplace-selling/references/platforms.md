@@ -19,6 +19,10 @@
 - Seller onboarding order: profile fields → "Create a Gig" → category/subcategory (irreversible after publish) → search tags → scope & pricing (packages) → description & FAQ → requirements → gallery → publish.
 - Skip during onboarding: "Seller Plus" upsell ($15/mo — keyword/promotion tools, useless before first order), Trust & Safety training (optional), and the "Upload your experience" LinkedIn-PDF import (manual profile entry works fine). ID verification is locked until the first gig is created.
 - LinkedIn import (optional): LinkedIn profile → "…" (その他のアクション) → "Save to PDF" (PDFとして保存). LinkedIn's About section is labeled **自己紹介** in the Japanese UI (add URL ends `/edit/forms/summary/new/`) — NOT 「概要」.
+- Gig **description**: 1200-char cap, and it is a rich-text editor (bold, italic, colour, bullet/numbered list). Pasting markdown (`**bold**`, `- item`) renders as literal characters — paste plain text and apply the toolbar buttons to format.
+- Gig **extras** step: for an async service leave every session-based extra unticked (Extra minutes, Additional session, Session recording) — they imply live calls and contradict the "no calls" pitch. "Extra fast delivery" is the only sensible optional upsell.
+- Gig **requirements** step: the Fiverr-default questions (industry, part of a bigger project) are optional; add custom questions instead — read-only repo access or scanner output, which tool they built with (multiple choice), plus an optional focus area.
+- Onboarding shows a "Profile Strength N/12" dashboard with a 3-step checklist — Trust & Safety training (optional: skip), Create a Gig, ID verification (locked until the first gig exists).
 
 ## W-8BEN (Japan seller)
 - Individual: Form W-8BEN. Entity: Form W-8BEN-E. TIN = My Number (マイナンバー).
