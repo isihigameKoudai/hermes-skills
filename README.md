@@ -62,7 +62,8 @@ skills/
 │   └── references/
 ├── deepseek-harness/
 ├── freelance-marketplace-selling/
-│   └── references/
+│   ├── references/
+│   └── templates/
 ├── google-workspace-oauth-setup/
 ├── hermes-contributing/
 ├── hermes-remote-backend/

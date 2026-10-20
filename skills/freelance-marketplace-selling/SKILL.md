@@ -11,6 +11,7 @@ Selling a solo/dev service internationally (Contra, Upwork, Fiverr). Per-platfor
 
 - Choosing or ranking distribution channels for a solo service business.
 - Writing profile/listing/gig copy for Contra, Upwork, or Fiverr.
+- Building a Fiverr gig end-to-end — wizard step order, package pricing, and gig images. Field-by-field walkthrough: `references/fiverr-gig-creation.md`.
 - Setting up payouts, tax forms (W-8BEN), or deciding a price ladder across marketplaces.
 
 ## Validation order (always)
@@ -52,3 +53,4 @@ Selling a solo/dev service internationally (Contra, Upwork, Fiverr). Per-platfor
 - Fiverr field strictness differs. **Profile tagline** ("Add title") accepts letters, numbers, spaces, and basic punctuation — `-` and `|` are fine, `·` (U+00B7) is not. The **gig title** must start with "I will" and must not end in a period — a trailing `.` alone fires `Title can contain letters and numbers only`. Do NOT blame hyphens for that error: deleting a hyphen did not clear it, deleting the trailing period did. Don't reword a working title around a punctuation mark you have not actually confirmed is the trigger.
 - **Have the user type Fiverr title fields by hand, never paste.** Pasting carries invisible characters (e.g. a non-breaking space) that re-trigger `Title can contain letters and numbers only` even when the visible text looks clean; typing it clears the error.
 - Fiverr locks the gig **category / service type after publish** — confirm the full path (e.g. Programming & Tech → QA & Review → Code Review) before publishing. The gig package editor may also show live-session fields (Session length / Number of sessions / Session recording) even for an async service; set them to the minimum and state "100% async, no calls" in the package description.
+- Fiverr gig **images**: 1280×769 px, up to 3 (≥1 required); the first image doubles as the search thumbnail, so the headline must stay legible at ~25% scale. Generate them with PIL, never an AI image model — diffusion models garble text. Recipe: `references/fiverr-gig-creation.md`; starter script: `templates/gig_image.py`.
