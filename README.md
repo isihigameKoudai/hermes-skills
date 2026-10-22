@@ -14,6 +14,7 @@ Hermes Agent 用のカスタム skill tap。学習で育ったスキルを共有
 | `crypto-asset-research` | Use when researching crypto assets for investment. |
 | `deepseek-harness` | Delegate coding to DeepSeek Harness (dsh) headless or SDK. |
 | `freelance-marketplace-selling` | フリーランスマーケットプレイスでの開発サービス販売 |
+| `frontend-framework-security` | Use when assessing frontend framework security tradeoffs. |
 | `google-workspace-oauth-setup` | Google Workspace OAuth のセットアップ手順 |
 | `hermes-contributing` | Hermes Agent への PR コントリビューション手順 |
 | `hermes-remote-backend` | VPS + リモートデスクトップ構成での Hermes 運用ノウハウ |
@@ -64,6 +65,7 @@ skills/
 ├── freelance-marketplace-selling/
 │   ├── references/
 │   └── templates/
+├── frontend-framework-security/
 ├── google-workspace-oauth-setup/
 ├── hermes-contributing/
 ├── hermes-remote-backend/
