@@ -48,6 +48,11 @@ Support: `scripts/compare-site.cjs` — normalized text/img/href diff of the bui
 
 5. **Deliver** — build, then push (a branch on the existing repo is the default for a re-platform; confirm the target first).
 
+6. **Measure the before/after (the performance delta).**
+   - "After" is live: in a FRESH browser session, sum `performance.getEntriesByType('resource')[].transferSize` and count requests (cached resources report `transferSize: 0`, so a warm session understates nothing but a fresh one is the honest number). CLS reads cleanly from a buffered `PerformanceObserver('layout-shift', { buffered: true })` registered after load.
+   - "Before" is usually already decommissioned. Wayback Machine archives the HTML but rarely the hashed JS/CSS chunks (fetching them returns an archive error page), and rebuilding the old project usually fails on a modern toolchain (Nuxt2 node-sass + node-gyp 7 dies on Python 3's removed `rU` file-open mode). Do not sink time into either path.
+   - Reconstruct the old client bundle instead: fetch each PINNED dependency's minified build from a CDN (`unpkg.com/<pkg>/<path>`), gzip locally, and sum — that is the vendor floor. State the framework-runtime + app-code remainder explicitly as an estimate. Report measured and estimated figures in separate columns.
+
 ## Rules
 
 - "Unchanged appearance" means reproduce pre-existing visual bugs faithfully, then flag them — a silent fix makes the new site DIFFER from live and violates the constraint. Offer the fix separately.
@@ -60,7 +65,7 @@ Support: `scripts/compare-site.cjs` — normalized text/img/href diff of the bui
 - `import.meta.env` only exposes `PUBLIC_`-prefixed vars to the client. To stay compatible with an existing env var name, read both: `import.meta.env.PUBLIC_X || process.env.X` (both resolve at build time in frontmatter).
 - `npm audit` flags on `sharp` (libvips) are transitive and only matter at BUILD time (used by `astro:assets`); safe for static output. Do NOT `npm audit fix --force` — it jumps a major Astro version.
 - `astro:assets` `<Picture>` wraps the `<img>` in a `<picture>` element; `class`/`alt`/`loading`/`data-*` forward to the `<img>`, but the wrapper breaks direct-child selectors (`.area > *`, `.x > img`). Use `<Image>` (single `<img>`, still supports `widths`/`sizes` srcset) where a `>` selector targets the image; reserve `<Picture>` (multi-format avif/webp) for images inside their own wrapper (`<figure>`) or with no sibling styling. When screenshots aren't viewable, verify layout by diffing element `getBoundingClientRect` lists (live vs preview) — positions/sizes must match exactly.
-- Re-encoding already-optimized JPEGs to webp/avif at default quality can be NEUTRAL or LARGER; the real wins are srcset (small viewports fetch small variants), lazy-loading below-fold images, and format choice on the LCP image. Measure per-page transfer (Performance `transferSize`), not dist size (which sums every generated variant).
+- Re-encoding already-optimized JPEGs to webp/avif at default quality can be NEUTRAL or LARGER; the real wins are srcset (small viewports fetch small variants), lazy-loading below-fold images, and format choice on the LCP image. Measure per-page transfer (Performance `transferSize`), not dist size (which sums every generated variant). AVIF encodes ~10–100× slower than webp at build time (first build balloons to minutes); Astro caches processed images so warm builds stay fast, but cold CI deploys pay the full cost — prefer webp-only when the image count is high and the AVIF margin is thin.
 
 ## Netlify gotchas
 
@@ -72,3 +77,4 @@ Support: `scripts/compare-site.cjs` — normalized text/img/href diff of the bui
 
 - The terminal/JSON transport double-escapes newlines: a file showing `\\n` in tool output is a single backslash+n in the file, i.e. a real JS newline escape. Confirm with `od -c` before porting string-building code.
 - Merging per-component scoped styles can make shared class names collide (e.g. two `.logo-wrapper` with different widths). Disambiguate the diverging variant with a modifier class (`.logo-wrapper.wide`) instead of letting the later rule win silently.
+- pnpm ≥10 blocks dependency build scripts (esbuild, sharp, native watchers) until approved; approve non-interactively with `pnpm approve-builds --all`, which writes an `allowBuilds` map to `pnpm-workspace.yaml`. Hand-writing the older `onlyBuiltDependencies` list name does not take effect on pnpm 12.
