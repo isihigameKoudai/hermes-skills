@@ -58,7 +58,9 @@ Support: `scripts/compare-site.cjs` — normalized text/img/href diff of the bui
 
 - A `<script>` (non-inline) in a Layout is bundled and INLINED into each page when small (~<4KB). Verify with `grep -c '<script type="module">' dist/*/index.html`, not by hunting for a `.js` in `dist/_astro/`.
 - `import.meta.env` only exposes `PUBLIC_`-prefixed vars to the client. To stay compatible with an existing env var name, read both: `import.meta.env.PUBLIC_X || process.env.X` (both resolve at build time in frontmatter).
-- `npm audit` flags on `sharp` (libvips) are transitive and unused when serving plain `<img>` from `public/` (no astro:assets Image). Do NOT `npm audit fix --force` — it jumps a major Astro version.
+- `npm audit` flags on `sharp` (libvips) are transitive and only matter at BUILD time (used by `astro:assets`); safe for static output. Do NOT `npm audit fix --force` — it jumps a major Astro version.
+- `astro:assets` `<Picture>` wraps the `<img>` in a `<picture>` element; `class`/`alt`/`loading`/`data-*` forward to the `<img>`, but the wrapper breaks direct-child selectors (`.area > *`, `.x > img`). Use `<Image>` (single `<img>`, still supports `widths`/`sizes` srcset) where a `>` selector targets the image; reserve `<Picture>` (multi-format avif/webp) for images inside their own wrapper (`<figure>`) or with no sibling styling. When screenshots aren't viewable, verify layout by diffing element `getBoundingClientRect` lists (live vs preview) — positions/sizes must match exactly.
+- Re-encoding already-optimized JPEGs to webp/avif at default quality can be NEUTRAL or LARGER; the real wins are srcset (small viewports fetch small variants), lazy-loading below-fold images, and format choice on the LCP image. Measure per-page transfer (Performance `transferSize`), not dist size (which sums every generated variant).
 
 ## Netlify gotchas
 
