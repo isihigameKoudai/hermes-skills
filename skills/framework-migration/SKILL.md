@@ -60,6 +60,12 @@ Support: `scripts/compare-site.cjs` — normalized text/img/href diff of the bui
 - `import.meta.env` only exposes `PUBLIC_`-prefixed vars to the client. To stay compatible with an existing env var name, read both: `import.meta.env.PUBLIC_X || process.env.X` (both resolve at build time in frontmatter).
 - `npm audit` flags on `sharp` (libvips) are transitive and unused when serving plain `<img>` from `public/` (no astro:assets Image). Do NOT `npm audit fix --force` — it jumps a major Astro version.
 
+## Netlify gotchas
+
+- With `"type": "module"` in package.json, functions run under the Web-standards (v2) runtime: handler is `export default async (req) => Response` and MUST return a `Response` — the legacy `{ statusCode, body }` object throws `NetlifyUserError: Function returned an unsupported value`. Test locally by importing the handler and calling it with `new Request(url, { method, body })`; assert `.status` and `await .text()`.
+- Functions are served at `/.netlify/functions/<name>` (leading dot). A client `fetch('/netlify/functions/<name>')` (no dot) silently hits the 404 page. Verify after build (`grep -oE 'fetch\("/[^"]*' dist/<page>/index.html`) and after deploy (`curl -s <site>/<page>/ | grep -oE 'fetch\("/[^"]*'`).
+- Deploy propagates in ~30–60s; a transient 500 from the upstream (e.g. Slack) can appear on the first cold call — re-test before assuming a code bug.
+
 ## Pitfalls
 
 - The terminal/JSON transport double-escapes newlines: a file showing `\\n` in tool output is a single backslash+n in the file, i.e. a real JS newline escape. Confirm with `od -c` before porting string-building code.
