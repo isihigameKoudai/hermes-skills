@@ -64,6 +64,7 @@ skills/
 │   └── references/
 ├── deepseek-harness/
 ├── framework-migration/
+│   ├── references/
 │   └── scripts/
 ├── freelance-marketplace-selling/
 │   ├── references/
