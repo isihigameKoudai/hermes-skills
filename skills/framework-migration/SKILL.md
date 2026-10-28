@@ -27,7 +27,7 @@ Support: `scripts/compare-site.cjs` — normalized text/img/href diff of the bui
 
 1. **Recon — read everything, then fetch the live site.**
    - Clone the repo and read every page, component, style, and config file.
-   - `curl -sI` the live site for the host + render mode (`server:` header, `data-server-rendered="true"` in HTML).
+   - `curl -sI` the live site for the host (`server:` header). To classify render mode, do NOT trust `data-server-rendered="true"` — Nuxt stamps it on both `nuxt generate` (SSG) and `nuxt build`+`start` (SSR) output, so it proves nothing. Decide from deploy mechanics instead: a static site has a `generate` script and no `netlify.toml`/functions/`_redirects`; SSR needs a serverless function, a `start`/`node` server, or a nuxt-serverless module.
    - `curl -sL` every page and save to disk for later diffing. A trailing-slash 301 reveals the canonical URL scheme.
    - Inventory every feature that must survive: forms (where do they POST?), analytics, PWA/manifest/service-worker, scroll/reveal/modal behavior, env vars.
 
