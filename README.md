@@ -13,6 +13,7 @@ Hermes Agent 用のカスタム skill tap。学習で育ったスキルを共有
 | `cmo` | 新規事業の立案・検証・グロース・マーケティング全般を統括するディレクター・エージェント（制約・事実・算数・リスクの4ゲート検証付き） |
 | `crypto-asset-research` | Use when researching crypto assets for investment. |
 | `deepseek-harness` | Delegate coding to DeepSeek Harness (dsh) headless or SDK. |
+| `fiverr-spam-detection` | Use when judging if an incoming Fiverr message is spam/scam. |
 | `framework-migration` | Use when porting a website to a new framework or stack. |
 | `freelance-marketplace-selling` | フリーランスマーケットプレイスでの開発サービス販売 |
 | `frontend-framework-security` | Use when assessing frontend framework security tradeoffs. |
@@ -63,6 +64,7 @@ skills/
 ├── crypto-asset-research/
 │   └── references/
 ├── deepseek-harness/
+├── fiverr-spam-detection/
 ├── framework-migration/
 │   ├── references/
 │   └── scripts/
