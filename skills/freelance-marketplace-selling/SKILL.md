@@ -44,6 +44,22 @@ Selling a solo/dev service internationally (Contra, Upwork, Fiverr). Per-platfor
 - US marketplaces require a W-8BEN (individual) or W-8BEN-E (entity) plus the seller's country TIN (Japan: My Number). Japan has a US tax treaty, so claim reduced/exempt withholding. Upwork additionally requires a Statement of Source (work performed outside the US); missing forms trigger up to 30% withholding and blocked withdrawals.
 - Platform minimums reshape the offer: a sub-minimum tier (e.g. a $199 lead magnet under Contra's $250 flat floor) cannot be listed there — route it to another channel or bundle it up. Check minimums before designing the price ladder.
 
+## Driving traffic to a live listing (Fiverr)
+
+Full detail in `references/fiverr-traffic-and-ranking.md` — load it before designing any "get more traffic / more orders" plan. The load-bearing rules:
+
+- **Relevance is the only lever before the first order** (title → tags → description). After that Fiverr ranks on performance: CTR, conversion rate, response speed, completion rate, reviews. Impressions that do not convert get the gig *deprioritised*, so traffic without a converting offer is worse than no traffic.
+- **Diagnose by stage, not by volume.** Read the gig's own 30-day window: no impressions → relevance/keyword problem; impressions but no clicks → thumbnail/title problem; clicks but no orders → offer/price/description problem. Fix the stage that is zero, not the stage you feel like editing.
+- **Do not stack edits.** Fiverr's own guidance is 3–4 weeks (30 days) after a keyword change before judging it; churning the listing resets the read.
+- **External traffic is permitted and rewarded** — Fiverr's help center allows linking your own site/portfolio, and sellers who clear the first-order barrier fastest usually bring their own audience. But **Google Ads is explicitly banned** for promoting gigs/seller pages/any Fiverr content: never route a Fiverr URL through Google Ads, and never recommend it. No unsolicited DM promotion, no fake reviews, no artificial traffic; and obey the ToS of whichever external channel you use.
+- First orders beat ranking tactics — roughly the first five delivered well, plus reviews, build the score ranking follows from.
+
+## Cross-posting a listing to LinkedIn
+
+The section that holds link cards is **Featured**, but the Japanese UI labels it 「**おすすめ**」, and 「あなたへのおすすめ」(Suggested for you) is a *different* section — identify it as "the section containing the link card", not by the label word. The same JP/EN mismatch bites elsewhere: About is 「**自己紹介**」 (not 「概要」), and the "…" overflow menu is 「**その他のアクション**」 (Save to Profile as PDF lives inside it). Expect the user to ask "which one is it?" and answer with the Japanese label plus its position, not the English term.
+
+Adding a link auto-fills the required 役職/ポジション (title) field with the destination page's `<title>` — replace it with a clean short label. The Featured description field is short: hand over a compact (~200-character) English summary rather than a long one, and check the live cap before promising a length.
+
 ## Pitfalls
 
 - Do not assert comparative channel-demand claims ("buyers live in X, not Y") as fact without directly verifying — search real posts and read the live feed. If unverified, label it inference and say so; the correction is more expensive than the check.
