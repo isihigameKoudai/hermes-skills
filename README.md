@@ -23,7 +23,6 @@ Hermes Agent 用のカスタム skill tap。学習で育ったスキルを共有
 | `kamepon-article-style` | かめぽん流の技術記事執筆スタイル |
 | `oss-pr-scout` | Use when shipping an upstream OSS PR from the user's stack. |
 | `porting-skill-packs` | 外部スキル／エージェントパックの Hermes への移植 |
-| `security-audit` | セキュリティ監査: 脅威モデル・探索・検証・報告を実行。 |
 | `service-business-launch` | サービスビジネスの立ち上げ（検証ファースト） |
 | `technical-writeup-from-logs` | 生ログ／トランスクリプトから事実確認済みの技術記事を書く |
 
@@ -81,9 +80,6 @@ skills/
 ├── kamepon-article-style/
 ├── oss-pr-scout/
 ├── porting-skill-packs/
-│   └── scripts/
-├── security-audit/
-│   ├── references/
 │   └── scripts/
 ├── service-business-launch/
 └── technical-writeup-from-logs/

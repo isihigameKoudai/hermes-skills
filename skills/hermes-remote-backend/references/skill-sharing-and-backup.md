@@ -52,3 +52,22 @@ Bundled skills (~83) are NOT synced — recipients already have them via `hermes
 - **`created_by` marker changed — `skill_manage` now writes `"learn"`, not `"agent"`.** `skill_manage(action='create')` records `created_by: "learn"` (a learning-signal marker); `"agent"` is now reserved for the curator-management opt-in (`hermes curator adopt <name>`). The sync filter `if s.get("created_by") == "agent"` therefore only matches adopted skills, so freshly created skills silently stop publishing. Fix per-skill with `hermes curator adopt <name>`, or restore auto-publish by changing the filter to `if s.get("created_by") in ("agent", "learn")`. Full on-disk taxonomy: `null` (bundled/default), `"learn"` (agent-authored), `"agent"` (adopted → syncable), `"installed"` (hub install). Despite the name, `created_by` is a curator-management flag, not authorship proof.
 - **A tap skill not in the selected set (`agent` skills + `EXTRA`) is DELETED, not just skipped.** The script's final pass removes any `skills/<name>/` not in the list, so a hand-added or fallen-out skill disappears on the next run. Adoption or `EXTRA` is the only durable publish path.
 - **Never push the tap repo from a side clone — the sync script pushes without ever pulling.** A commit pushed from a non-host clone (e.g. a sandbox `gh` clone) leaves `~/hermes-skills-tap` behind; its next real skill change then fails non-fast-forward, and the sync stalls (no-diff ticks `exit 0`, so the failed push is never retried). Publishing must go through adopt/`EXTRA` and let the cron sync. For a manual README update (which the script does NOT touch — the table goes stale), push it, then reconcile the host at once: `ssh host 'cd ~/hermes-skills-tap && git pull'`.
+
+## Unpublishing / removing a skill from the tap
+
+Unpublishing a hand-added skill (stop sharing it, keep it local on the VPS) = remove its slug from `EXTRA`; nothing else. The delete pass then removes `skills/<slug>/` from the tap on the next sync run (cron `*/10`, or run `bash ~/.hermes/scripts/sync-skills-to-tap.sh` manually over SSH). This is the deliberate inverse of "`EXTRA` is the only durable publish path".
+
+Host-side slug removal, fish-safe (single-quoted ssh arg, semicolon-joined, idempotent — safe to run even if the slug is already absent):
+
+```fish
+ssh hermes@<vps> 'sed -i "s/, \"<slug>\"//" ~/.hermes/scripts/sync-skills-to-tap.sh; grep -n "^EXTRA" ~/.hermes/scripts/sync-skills-to-tap.sh'
+```
+
+Verify tap contents read-only over the public GitHub API — no `gh`/auth needed:
+
+```bash
+curl -s https://api.github.com/repos/OWNER/repo/contents/skills | grep -o '"name": *"[^"]*"'
+curl -s -o /dev/null -w '%{http_code}' https://api.github.com/repos/OWNER/repo/contents/skills/<slug>   # 200 = present, 404 = gone
+```
+
+Pitfall: a hand-added skill can already be on the tap while you're still mid-conversation — the `*/10` sync cron fires between turns. Before telling the user whether a skill is published, curl the API to check current state rather than assuming it's absent.
