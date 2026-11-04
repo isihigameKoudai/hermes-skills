@@ -8,8 +8,14 @@
 
 ## Upwork
 - Payout: Direct-to-Local-Bank **$0.99/withdrawal** (JPY supported) is the cheapest; Payoneer $2; wire $50.
+- **Freelancer service fee is a variable 0–15% per contract**, set when the contract begins and locked once it does — **NOT a flat 10%**. Cost the worst case (15%) when modelling net pay. (A delegated research subagent asserted "flat 10%" from memory; the official pricing page says 0–15%. Re-check `upwork.com/pricing/freelancer` + `support.upwork.com/hc/en-us/articles/211062538` before quoting a fee.)
 - Tax: W-8BEN + Statement of Source required; missing forms → up to 30% withholding + blocked withdrawals.
-- Poor fit for premium async offers: clients often expect an intro call and compare against low hourly rates.
+- **Connects**: the free Basic plan includes **10 Connects/month**; Freelancer Plus ($19.99/mo) gives 100. The per-proposal cost **varies by job and changes over time**, so a monthly allowance cannot be divided by a fixed rate to derive "proposals per month" — read the cost on the apply screen. Misusing Connects (duplicate accounts, inflating activity) restricts the account.
+- ToS: sharing contact details before a contract exists is prohibited (an email for repository access is the narrow exception); off-platform payment is a permanent-ban offence.
+- Poor fit for premium async offers: clients often expect an intro call and compare against low hourly rates. Treat `screen share` / `Zoom` / `video call` as a hard filter and skip listings that require it.
+
+## Verifying that a listing or job URL still exists
+Fiverr, Upwork and Reddit all return **403 to `curl`** (WAF / bot block). A 403 is **not** evidence the page is gone — treating it as such marks every real competitor and job posting as unverified and empties the analysis. Confirm with a second fetcher (`web_extract` goes through a different path than `curl`) and read the returned page title. If a specific job/listing URL **redirects to a category or listing page**, that posting has expired → mark it [要検証], not verified. Reddit is unsupported by that extractor, so Reddit threads can only ever be cited as **unverified demand signals** — say so rather than presenting them as confirmed.
 
 ## Fiverr
 - Payout: bank transfer via Payoneer ($1, min $20 outside US), PayPal, Payoneer account ($3). Direct deposit is US-only.

@@ -60,7 +60,8 @@ skills/
 │   ├── references/
 │   └── templates/
 ├── cmo/
-│   └── references/
+│   ├── references/
+│   └── templates/
 ├── crypto-asset-research/
 │   └── references/
 ├── deepseek-harness/
