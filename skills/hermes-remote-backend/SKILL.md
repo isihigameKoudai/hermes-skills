@@ -136,20 +136,28 @@ Fixes, in order:
 - **The Docker sandbox does NOT inherit `~/.hermes/.env`** (verified: only ~16 env vars, none of the host's API keys). To pass a secret to `terminal`/`execute_code`, either list it in `terminal.docker_forward_env` (resolves from `.env`, value never enters config) or declare `required_environment_variables:` in the skill frontmatter (auto-merged). The forward is applied at container creation, so a gateway restart + new session is needed after adding a key.
 - **Re-sending `MEDIA:` won't dodge the download bug** — it hits the same 401 for non-media files. Give the `scp` path instead.
 - **A `@folder:` reference to a Mac path never reaches the sandbox.** The desktop app expands it locally; when the path is outside the configured allowed workspace you get only a `path is outside the allowed workspace` context warning with no file contents. Don't stall or ask immediately — previous sessions often left a working mirror of the same material on the VPS (`/workspace/`, `/root/`, or a project subdir). `ls` those first; if you find the mirror, say plainly you worked from the VPS mirror and list which files, then ask the user to flag anything missing.
+- **The sandbox's writable state does not survive a rebuild.** A fresh sandbox can come up with none of the CLIs, credentials, or files earlier sessions installed or wrote — including GitHub auth and repo trees you were mid-way through. `ls` the tree before building on it; if it is gone, re-create it rather than referencing it. GitHub CLI recovery procedure: `github-auth`.
 - The user's standing preference (see memory): when file delivery silently fails, resolve the **concrete path** (find + scp), never a "copy from chat" workaround.
 
 ## Verified sandbox↔host mapping (this user's VPS)
 
-Confirmed via `/proc/self/mountinfo` from inside the terminal backend. Files the agent writes to `/workspace/...` are host-visible at the exact path below — no `find` guessing needed:
+The sandbox directory name is **dynamic** — `default_ws_<hash>`, where `<hash>` is regenerated whenever the sandbox is (re)created. Never hardcode it. Read the real mount source and quote the host path from that output:
+
+```bash
+grep ' /workspace ' /proc/self/mountinfo
+# → .../sandboxes/docker/default_ws_7944f2aec449f719-19a3328f69d1/workspace
+```
 
 | Inside sandbox | On the VPS host |
 |---|---|
-| `/workspace` | `/home/hermes/.hermes/sandboxes/docker/default/workspace` |
-| `/root` | `/home/hermes/.hermes/sandboxes/docker/default/home` |
+| `/workspace` | `/home/hermes/.hermes/sandboxes/docker/default_ws_<hash>/workspace` |
+| `/root` | `/home/hermes/.hermes/sandboxes/docker/default_ws_<hash>/home` |
+
+A host path built from the older `.../sandboxes/docker/default/workspace/...` form does not exist. `scp` then fails with `No such file or directory`, which reads like the *file* is missing and sends you hunting for it — the parent directory is what is wrong. Resolve the mapping first, then hand over the `scp` line.
 
 - Attached images/files the desktop app hands you are quoted as **host** paths (e.g. `/home/hermes/.hermes/images/x.png`). Inside the sandbox that file is under `/root/...` per the table, so `vision_analyze`/`read_file` must get the `/root/...` form or they 404 — when a quoted path comes back 'not found', rewrite the leading `/home/hermes/` to `/root/` and retry.
 
-- SSH key auth for the `hermes` user is configured; `scp hermes@<vps-ip>:/home/hermes/.hermes/sandboxes/docker/default/workspace/... ~/Downloads/` works from the Mac.
+- SSH key auth for the `hermes` user is configured; `scp hermes@<vps-ip>:<host path resolved from the table above>/... ~/Downloads/` works from the Mac.
 - From inside the sandbox you CANNOT reach `/home/hermes/.ssh` (no mount, no docker.sock), so adding SSH keys / editing host `authorized_keys` must happen from an existing host session (root console or a working SSH user).
 - **Skills tree is `ro` in the sandbox.** `/root/.hermes/skills` is a read-only bind mount of the host's `/home/hermes/.hermes/skills/` (verify: `grep -E '/root|/skills' /proc/self/mountinfo`). The agent reads skills but cannot write them from the sandbox; `skill_manage` writes happen host-side.
 - **`~/.hermes/scripts/` is NOT mounted into the sandbox.** Cron `script` paths resolve under the HOST `$HERMES_HOME/scripts/`; a sandbox write to `/root/.hermes/scripts/` lands elsewhere and the cron creation fails its script-existence check ("Script file not found"). To place a script on the host: write it to `/workspace/` (rw), then have the user `cp` it over SSH. Full recipe: `references/skill-sharing-and-backup.md`.
@@ -162,6 +170,6 @@ Confirmed via `/proc/self/mountinfo` from inside the terminal backend. Files the
 - `/root/.hermes/skills` is a **read-only (`ro`) bind mount** of the real `/home/hermes/.hermes/skills` (verify with `grep '/root' /proc/self/mountinfo`). From the sandbox you can read skills but NOT write them — `git init`/edits to skills must happen on the host (via a cron job or the user's SSH), never from the sandbox terminal.
 - The sandbox's `/root/.hermes/scripts` is NOT bind-mounted — it is a different tree from the host's `~/.hermes/scripts/`. A `write_file` under `/root/.hermes/scripts/` does NOT reach where cron looks.
 - Cron **scripts run on the host** (the gateway/scheduler side). `cronjob` `script:` resolves under the cron process's `$HERMES_HOME/scripts/` (= `/home/hermes/.hermes/scripts/`), and `action='create'` FAILS if that file doesn't already exist there.
-- To place a host file from the sandbox: `write_file` it under `/workspace` (rw mount → host `/home/hermes/.hermes/sandboxes/docker/default/workspace/`), then have the user copy it into place: `ssh hermes@<vps-ip> 'mkdir -p ~/.hermes/scripts && cp /home/hermes/.hermes/sandboxes/docker/default/workspace/<file> ~/.hermes/scripts/ && chmod +x ~/.hermes/scripts/<file>'`.
+- To place a host file from the sandbox: `write_file` it under `/workspace` (rw mount → the `default_ws_<hash>` host path resolved above), then have the user copy it into place: `ssh hermes@<vps-ip> 'mkdir -p ~/.hermes/scripts && cp /home/hermes/.hermes/sandboxes/docker/default/workspace/<file> ~/.hermes/scripts/ && chmod +x ~/.hermes/scripts/<file>'`.
 - `no_agent: true` cron jobs make **zero LLM/API calls** (verified: `API calls: 0`) — use them for pure-shell recurring work (e.g. a `git init && git commit` autocommit of the skills tree) to avoid Nous Portal credit spend. A proven self-initialising autocommit script is in `templates/git-autocommit-skills.sh`; create it with `deliver: local` so no notification fires, and keep the script silent (empty stdout) when nothing changed.
 - Reading the host-owned `.git` from the sandbox (as root) fails with `fatal: detected dubious ownership in repository` — inspect it with `git -c safe.directory='*' log` (or `-C <dir> -c safe.directory='*'`). The skills repo lives at the real `/home/hermes/.hermes/skills/.git`, visible read-only under `/root/.hermes/skills/.git`. The git owner is the host user, not sandbox root — hence the ownership guard.

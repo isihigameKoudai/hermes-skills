@@ -115,7 +115,7 @@ Run it before answering any "did you just paste it?" question, and quote the has
 
 ### 6. Stage and install (remote VPS)
 
-The sandbox skills tree is read-only. Stage the pack under `/workspace` (host-visible at `/home/hermes/.hermes/sandboxes/docker/default/workspace/`), then hand the user ONE fish-safe, semicolon-chained command to `cp -r` into `~/.hermes/skills/<category>/`. A new category (e.g. `marketing/`) avoids name collisions with bundled skills. See the `hermes-remote-backend` skill for the mount mapping.
+The sandbox skills tree is read-only. Stage the pack under `/workspace` (host-visible at `/home/hermes/.hermes/sandboxes/docker/default_ws_<hash>/workspace/` — resolve `<hash>` from `grep ' /workspace ' /proc/self/mountinfo` first, it changes per sandbox), then hand the user ONE fish-safe, semicolon-chained command to `cp -r` into `~/.hermes/skills/<category>/`. A new category (e.g. `marketing/`) avoids name collisions with bundled skills. See the `hermes-remote-backend` skill for the mount mapping.
 
 ### 7. Keep ported packs out of any auto-publish path
 
