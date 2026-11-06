@@ -27,8 +27,16 @@ Consequences that drive the plan:
 
 - Fiverr's own guidance: allow **3–4 weeks (30 days)** after a keyword change before judging
   its impact.
-- Do not stack edits while a change is being measured — churning the listing resets the read
-  and confuses the algorithm.
+- **One edit, then a freeze.** "Do not stack edits" means do not edit *repeatedly across the
+  measurement window* — it does NOT mean change one field per session. Bundle every field you
+  intend to change (title + tags + description) into a **single** editing pass, then leave them
+  alone for the full 30 days. A second pass days later triggers a second re-review and resets
+  the read for no gain.
+- At zero impressions there is no signal to attribute, so splitting fields to "isolate the
+  variable" buys nothing — it only costs an extra re-review.
+- A significant edit can briefly move the gig to **Under review**; returning to ACTIVE within
+  a few hours to 48 h is normal. Confirm it is Active again — this is also the first thing to
+  check when impressions stay at zero.
 - Judge by the gig's own trend across full 30-day analytics windows, not against a quoted
   benchmark.
 
@@ -48,6 +56,18 @@ Read the gig's own 30-day window (impressions → clicks → orders) and fix the
   gig. Sellers who clear the first-order barrier fastest typically bring their own audience.
 - Therefore "increase traffic" is two separable problems: raise *relevant* impressions inside
   Fiverr, and bring qualified outsiders in. Do not treat them as one.
+- **Do the run-rate arithmetic before investing in ranking work.** One order needs on the order
+  of 1,100–10,000 impressions and 33–100 clicks. Take the gig's own 30-day impression count,
+  convert it to a monthly run rate, and compare it against that band. If the run rate is an
+  order of magnitude or more short, ranking tactics cannot close the gap — the constraint is
+  *discovery*, not relevance. Say that plainly instead of prescribing keyword work that cannot
+  move the number, and spend the effort on bringing an audience in.
+- **Publishing the prevention side free is a discovery channel.** A free installable tool (e.g.
+  the audit workflow shipped as an Agent Skill) creates inbound from the ecosystem and doubles
+  as evidence for the paid service: the free tier prevents, the paid tier verifies. Judge the
+  channel by installs/downloads, not by the listing existing — a directory page with zero
+  installs is a prepared channel, not traffic. Mechanics: `hermes-agent-skill-authoring`,
+  `references/ecosystem-distribution.md`.
 
 ## Hard bans (account-suspension risk)
 
