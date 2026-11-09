@@ -130,6 +130,23 @@ Fixes, in order:
 3. **Remaining open gap — container→host path translation.** In a Docker-sandbox topology, files the agent writes *inside* the sandbox (`/workspace/...`) sit at a different path than the gateway host resolves, so preview / `MEDIA:` / download can still 404 even after the auth fix lands. **This hits *media* too** — an image generated into `/workspace/...` and delivered as `MEDIA:` fails with the same message (verified), so "media works fine" holds only for host-resident files, never sandbox-path ones. Resolve with the sandbox↔host mapping table below: write under `/workspace`, then `scp` from the host-visible path, and/or hand the user a direct URL from a file host (uguu.se, see Pitfalls).
 4. **Stopgap:** `auth_required: false` — only if the gateway is NOT internet-exposed (Tailscale-only is fine).
 
+## SSH tunnel half-dead — Desktop connects via LaunchAgent port-forward, then ECONNREFUSED
+
+When the Desktop app reaches the VPS backend over a local SSH port-forward (e.g. a macOS LaunchAgent running `ssh -N -L 9119:127.0.0.1:9119 hermes@<vps>`), the app fails with `connect ECONNREFUSED 127.0.0.1:9119` / `Hermes backend did not become ready` when the tunnel is **half-dead**: the `ssh` process is still alive, but its local port is no longer LISTENing. `ps` showing the process proves nothing — check the port, not the process.
+
+Diagnose in this order:
+1. `launchctl list | grep <label>` → exit code `0` is healthy, `255` (or anything nonzero) means the agent failed.
+2. `lsof -i :<port>` → must show LISTEN; empty = the forward is gone.
+3. The agent's stderr log (`/tmp/hermes-tunnel.err` or the plist's `StandardErrorPath`) → `Connection reset by peer` / `Broken pipe` / `channel X: open failed: connect failed` = the SSH link died and the port-forward vanished with it.
+
+Root cause is usually the **LaunchAgent startup**, not SSH or the network: a manual `ssh -N -L … -o ServerAliveInterval=30 -o ServerAliveCountMax=3 -o ExitOnForwardFailure=yes` LISTENs fine, while the bare LaunchAgent goes half-dead. Fix the plist so it self-heals instead:
+- absolute `/usr/bin/ssh` path (LaunchAgent's minimal PATH can miss `ssh`),
+- `ServerAliveInterval=30` + `ServerAliveCountMax=3` (detect and drop a dead link instead of hanging a zombie forward),
+- `ExitOnForwardFailure=yes` (exit the moment the forward can't bind, instead of staying alive with no port — this is the half-dead killer),
+- `StrictHostKeyChecking=accept-new` (non-interactive first connect).
+
+Reset a half-dead tunnel: `launchctl unload ~/Library/LaunchAgents/<label>.plist` → `pkill -f 'ssh.*<port>'` → `launchctl load …` → confirm exit `0` + `lsof` LISTEN. Before blaming the tunnel, also confirm the VPS side is actually LISTENing on that port (`ss -tlnp | grep <port>`); frequent resets on the VPS side point to fail2ban / MaxStartups / link quality, not the plist.
+
 ## Pitfalls
 
 - **The terminal backend is a Docker sandbox *inside* the VPS; the gateway/agent runs on the VPS *host*, outside it.** From the sandbox you can find/diagnose files but cannot run `hermes update` or patch the host gateway — that must happen on the host. Don't claim you applied a fix you only verified from the sandbox.
