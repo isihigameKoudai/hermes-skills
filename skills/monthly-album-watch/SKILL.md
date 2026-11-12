@@ -82,7 +82,8 @@ python3 monthly_albums.py --all 2026-10
 
 - 作成済み job 名: 「毎月アルバム新作チェック」
 - 対象は target_artists.txt 次第。空なら全961名。
-- 配信先: 作成元チャット(origin)。
+- 配信先: `deliver: origin` にするとこの環境では存在しない Slack チャンネル(`slack:C0BL...`)に解決され `not_in_channel` で失敗する。**`deliver: local` にする**(出力は monthly_report/ に記録、通知なし)。チャットへの実配信が必要なら bot が入っている明示的なチャンネル(address)を指定すること。
+- ホスト側スクリプトを更新したら `cronjob_manage(action=run)` で1回実行して検証してから本番に任せる。
 
 ## 出力フォーマット
 
@@ -90,8 +91,11 @@ python3 monthly_albums.py --all 2026-10
 アーティスト名
 アルバム名 (YYYY-MM-DD)
 https://www.deezer.com/album/ID
+https://cdn-images.dzcdn.net/.../cover_big 500x500 アートワークURL
 (空行)
 ```
+
+アルバムごとに Deezer の `cover_big`(500x500)アートワーク画像URLを出力・保存する。`cover_medium`(250)／`cover_xl`(1000)も利用可。ユーザーはアートワークURLも一緒に保存を希望。
 
 ## Pitfalls / 限界
 
