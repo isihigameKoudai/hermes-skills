@@ -21,6 +21,7 @@ Hermes Agent 用のカスタム skill tap。学習で育ったスキルを共有
 | `hermes-contributing` | Hermes Agent への PR コントリビューション手順 |
 | `hermes-remote-backend` | VPS + リモートデスクトップ構成での Hermes 運用ノウハウ |
 | `kamepon-article-style` | かめぽん流の技術記事執筆スタイル |
+| `monthly-album-watch` | 月次アルバム新作チェックbotの設定・実行・編集。Deezerで前月リリースのアルバムを取得。 |
 | `oss-pr-scout` | Use when shipping an upstream OSS PR from the user's stack. |
 | `porting-skill-packs` | 外部スキル／エージェントパックの Hermes への移植 |
 | `service-business-launch` | サービスビジネスの立ち上げ（検証ファースト） |
@@ -80,6 +81,7 @@ skills/
 │   ├── references/
 │   └── templates/
 ├── kamepon-article-style/
+├── monthly-album-watch/
 ├── oss-pr-scout/
 ├── porting-skill-packs/
 │   └── scripts/
