@@ -56,6 +56,7 @@ skills/
 ├── akashic-research/
 ├── akashic-synchronizer/
 ├── ambitious-delegation/
+│   └── references/
 ├── business-plan-review/
 │   ├── references/
 │   └── templates/
