@@ -20,6 +20,7 @@ Hermes Agent 用のカスタム skill tap。学習で育ったスキルを共有
 | `google-workspace-oauth-setup` | Google Workspace OAuth のセットアップ手順 |
 | `hermes-contributing` | Hermes Agent への PR コントリビューション手順 |
 | `hermes-remote-backend` | VPS + リモートデスクトップ構成での Hermes 運用ノウハウ |
+| `js-toolchain-migration` | Use when migrating JS/TS lint/format/typecheck tooling. |
 | `kamepon-article-style` | かめぽん流の技術記事執筆スタイル |
 | `macos-shell-config` | Use when migrating or configuring the macOS login shell. |
 | `monthly-album-watch` | 月次アルバム新作チェックbotの設定・実行・編集。Deezerで前月リリースのアルバムを取得。 |
@@ -81,6 +82,8 @@ skills/
 ├── hermes-remote-backend/
 │   ├── references/
 │   └── templates/
+├── js-toolchain-migration/
+│   └── references/
 ├── kamepon-article-style/
 ├── macos-shell-config/
 ├── monthly-album-watch/
