@@ -37,7 +37,7 @@ Swap one lint/format/typecheck toolchain for another (biome → oxlint+oxfmt+tsr
 
 7. **Verify the full pipeline.** Run `lint`, `format:check`, `typecheck`, AND `build` to exit 0. Then push, open the PR, and watch the deploy/CI check — a native-binary tool that ran fine locally can fail on the CI/deploy image (Pitfalls).
 
-8. **Benchmark AFTER + write the doc.** Same hyperfine settings; put a before/after table (per-step + end-to-end total) in a committed `.md`, with tool versions, machine spec, and warmup/runs.
+8. **Benchmark AFTER + write the doc.** Same hyperfine settings; put a before/after table (per-step + end-to-end total) in a committed `.md`, with tool versions, machine spec, and warmup/runs. To also compare against a third tool that was never in the repo (e.g. ESLint), see `references/eslint-comparison.md`.
 
 ## Pitfalls
 
@@ -52,3 +52,7 @@ Swap one lint/format/typecheck toolchain for another (biome → oxlint+oxfmt+tsr
 - **pnpm 12 `trustPolicy: no-downgrade` blocks legitimately re-published tools** (a fast-moving beta shipped without provenance triggers "trust downgrade / possible package takeover"). Add the exact `name@version` to `trustPolicyExclude` in `pnpm-workspace.yaml` — the same fix the repo already applies to other packages. A strict `minimumReleaseAge` in the same file will silently pin you to an OLDER version of a fast-moving tool (it resolves the newest version older than the age threshold); the committed lockfile freezes that, so a `--frozen-lockfile` CI is consistent.
 
 - **Rule coverage is not a 1:1 match across tools.** Enabling the mapped rules will surface NEW diagnostics (the new tool's rules are stricter in places) and some old rules have no equivalent (e.g. biome `performance/noAccumulatingSpread`). Count and compare before/after warning totals; expect some drift and say so in the PR rather than hiding it.
+
+- **`hyperfine` aborts when the command exits non-zero — and linters exit 1 on errors, not just warnings.** `oxlint`/`biome` with warnings-only findings exit 0 and benchmark fine, but ESLint exits 1 the moment it reports an error, so a bare `hyperfine 'eslint …'` dies in the first warmup run. Add `--ignore-failure` (alias `-i`) when benchmarking any linter that may flag errors.
+
+- **The ESLint ecosystem lags the TypeScript and eslint majors.** `typescript-eslint` peers on `typescript <6.1`, so a repo on bleeding-edge TS 7 cannot run type-aware ESLint at all — pin `typescript@~5.x` temporarily to benchmark it. `eslint-plugin-react`/`jsx-a11y` peers top out at eslint ^9, so `eslint@10` won't satisfy them — pin `eslint@^9`. Both surface as pnpm peer warnings at install (non-fatal) and a hard crash at run time. A type-aware oxlint+tsrs handles TS 7 natively, which is itself a point in its favor.
