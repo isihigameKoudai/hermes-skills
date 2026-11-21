@@ -20,6 +20,7 @@ Hermes Agent 用のカスタム skill tap。学習で育ったスキルを共有
 | `google-workspace-oauth-setup` | Google Workspace OAuth のセットアップ手順 |
 | `hermes-contributing` | Hermes Agent への PR コントリビューション手順 |
 | `hermes-remote-backend` | VPS + リモートデスクトップ構成での Hermes 運用ノウハウ |
+| `js-monorepo-migration` | Use when converting a JS/TS repo to a pnpm monorepo. |
 | `js-toolchain-migration` | Use when migrating JS/TS lint/format/typecheck tooling. |
 | `kamepon-article-style` | かめぽん流の技術記事執筆スタイル |
 | `macos-shell-config` | Use when migrating or configuring the macOS login shell. |
@@ -82,6 +83,7 @@ skills/
 ├── hermes-remote-backend/
 │   ├── references/
 │   └── templates/
+├── js-monorepo-migration/
 ├── js-toolchain-migration/
 │   └── references/
 ├── kamepon-article-style/
