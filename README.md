@@ -29,6 +29,7 @@ Hermes Agent 用のカスタム skill tap。学習で育ったスキルを共有
 | `porting-skill-packs` | 外部スキル／エージェントパックの Hermes への移植 |
 | `service-business-launch` | サービスビジネスの立ち上げ（検証ファースト） |
 | `technical-writeup-from-logs` | 生ログ／トランスクリプトから事実確認済みの技術記事を書く |
+| `vite-bundle-optimization` | Use when shrinking a Vite/React bundle via code splitting. |
 
 > 機密情報（IP・メール・APIキー等）は自動マスクされて公開されます。
 
@@ -93,7 +94,8 @@ skills/
 ├── porting-skill-packs/
 │   └── scripts/
 ├── service-business-launch/
-└── technical-writeup-from-logs/
-    ├── references/
-    └── templates/
+├── technical-writeup-from-logs/
+│   ├── references/
+│   └── templates/
+└── vite-bundle-optimization/
 ```
