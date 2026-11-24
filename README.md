@@ -26,6 +26,7 @@ Hermes Agent 用のカスタム skill tap。学習で育ったスキルを共有
 | `macos-shell-config` | Use when migrating or configuring the macOS login shell. |
 | `monthly-album-watch` | 月次アルバム新作チェックbotの設定・実行・編集。Deezerで前月リリースのアルバムを取得。 |
 | `oss-pr-scout` | Use when shipping an upstream OSS PR from the user's stack. |
+| `personal-performance-os` | Use when coaching or planning the user on key decisions. |
 | `porting-skill-packs` | 外部スキル／エージェントパックの Hermes への移植 |
 | `service-business-launch` | サービスビジネスの立ち上げ（検証ファースト） |
 | `technical-writeup-from-logs` | 生ログ／トランスクリプトから事実確認済みの技術記事を書く |
@@ -91,6 +92,7 @@ skills/
 ├── macos-shell-config/
 ├── monthly-album-watch/
 ├── oss-pr-scout/
+├── personal-performance-os/
 ├── porting-skill-packs/
 │   └── scripts/
 ├── service-business-launch/
